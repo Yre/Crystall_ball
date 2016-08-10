@@ -265,7 +265,7 @@ int main()
         // Draw skybox first
         glDepthMask(GL_FALSE);// Remember to turn depth writing off
         skyboxShader.Use();   
-        glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(glm::mat4(glm::mat3(camera.GetViewMatrix()))));
         glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         // skybox cube
         glBindVertexArray(skyboxVAO);
