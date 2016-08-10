@@ -61,7 +61,7 @@ int main()
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "HW3", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Crystal snow ball", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
     // Set the required callback functions
@@ -208,21 +208,21 @@ int main()
 
     glBindVertexArray(skyboxVAO);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 
 
     // Then, we set the light's VAO (VBO stays the same. After all, the vertices are the same for the light object (also a 3D cube))
     GLuint lightVAO;
     glGenVertexArrays(1, &lightVAO);
-    glBindVertexArray(lightVAO);
+    glGenBuffers(1, &m_vboIndex);
 
-    // We only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need.
+    glBindVertexArray(lightVAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     GLuint m_vboIndex;
-    glGenBuffers(1, &m_vboIndex);
+    
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vboIndex);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, cntInd * sizeof(GLuint), indices, GL_STATIC_DRAW);
 
@@ -236,7 +236,7 @@ int main()
     faces.push_back("img/skybox/front.bmp");
     GLuint cubemapTexture = loadCubemap(faces);
 
-
+    SnowSence snowSence(50, 0.001, 0, 0.3);
 
     // Game loop
     while (!glfwWindowShouldClose(window)){
@@ -309,6 +309,10 @@ int main()
         glDrawElements(GL_TRIANGLE_STRIP, cntInd, GL_UNSIGNED_INT, NULL);
 
         glBindVertexArray(0);
+
+
+        snowSence.show();
+
 
         // Swap the screen buffers
         glfwSwapBuffers(window);
@@ -395,6 +399,10 @@ GLuint loadCubemap(vector<const GLchar*> faces)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
     return textureID;
+}
+
+void showSnow(){
+
+    
 }
