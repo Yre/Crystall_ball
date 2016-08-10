@@ -89,7 +89,7 @@ int main()
     // Build and compile our shader program
     Shader lightingShader("shader/phong.vs", "shader/phong.frag");
     Shader skyboxShader("shader/skybox.vs","shader/skybox.frag");
-
+    Shader inShader("shader/inphong.vs","shader/inphong.frag");
 
     int i, j;
     int numbOfTri = 41*41*2;
@@ -176,6 +176,49 @@ int main()
          1.0f, -1.0f,  1.0f
     };
 
+    GLfloat invertices[] = {
+        -0.1f, -0.1f, -0.1f,  0.0f,  0.0f, -1.0f,
+         0.1f, -0.1f, -0.1f,  0.0f,  0.0f, -1.0f,
+         0.1f,  0.1f, -0.1f,  0.0f,  0.0f, -1.0f,
+         0.1f,  0.1f, -0.1f,  0.0f,  0.0f, -1.0f,
+        -0.1f,  0.1f, -0.1f,  0.0f,  0.0f, -1.0f,
+        -0.1f, -0.1f, -0.1f,  0.0f,  0.0f, -1.0f,
+
+        -0.1f, -0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
+         0.1f, -0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
+         0.1f,  0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
+         0.1f,  0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
+        -0.1f,  0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
+        -0.1f, -0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
+
+        -0.1f,  0.1f,  0.1f, -1.0f,  0.0f,  0.0f,
+        -0.1f,  0.1f, -0.1f, -1.0f,  0.0f,  0.0f,
+        -0.1f, -0.1f, -0.1f, -1.0f,  0.0f,  0.0f,
+        -0.1f, -0.1f, -0.1f, -1.0f,  0.0f,  0.0f,
+        -0.1f, -0.1f,  0.1f, -1.0f,  0.0f,  0.0f,
+        -0.1f,  0.1f,  0.1f, -1.0f,  0.0f,  0.0f,
+
+         0.1f,  0.1f,  0.1f,  1.0f,  0.0f,  0.0f,
+         0.1f,  0.1f, -0.1f,  1.0f,  0.0f,  0.0f,
+         0.1f, -0.1f, -0.1f,  1.0f,  0.0f,  0.0f,
+         0.1f, -0.1f, -0.1f,  1.0f,  0.0f,  0.0f,
+         0.1f, -0.1f,  0.1f,  1.0f,  0.0f,  0.0f,
+         0.1f,  0.1f,  0.1f,  1.0f,  0.0f,  0.0f,
+
+        -0.1f, -0.1f, -0.1f,  0.0f, -1.0f,  0.0f,
+         0.1f, -0.1f, -0.1f,  0.0f, -1.0f,  0.0f,
+         0.1f, -0.1f,  0.1f,  0.0f, -1.0f,  0.0f,
+         0.1f, -0.1f,  0.1f,  0.0f, -1.0f,  0.0f,
+        -0.1f, -0.1f,  0.1f,  0.0f, -1.0f,  0.0f,
+        -0.1f, -0.1f, -0.1f,  0.0f, -1.0f,  0.0f,
+
+        -0.1f,  0.1f, -0.1f,  0.0f,  1.0f,  0.0f,
+         0.1f,  0.1f, -0.1f,  0.0f,  1.0f,  0.0f,
+         0.1f,  0.1f,  0.1f,  0.0f,  1.0f,  0.0f,
+         0.1f,  0.1f,  0.1f,  0.0f,  1.0f,  0.0f,
+        -0.1f,  0.1f,  0.1f,  0.0f,  1.0f,  0.0f,
+        -0.1f,  0.1f, -0.1f,  0.0f,  1.0f,  0.0f
+    };
 
     // First, set the container's VAO (and VBO)
     GLuint VBO, containerVAO;
@@ -188,6 +231,26 @@ int main()
 
 
     glBindVertexArray(containerVAO);        
+        // Position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+
+        // Normal attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
+
+    // Second, set the inside object's VAO (and VBO)
+    GLuint inVBO, incontainerVAO;
+    glGenVertexArrays(1, &incontainerVAO);
+    glGenBuffers(1, &inVBO);
+
+        
+    glBindBuffer(GL_ARRAY_BUFFER, inVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(invertices), invertices, GL_STATIC_DRAW);
+
+
+    glBindVertexArray(incontainerVAO);        
         // Position attribute
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
@@ -307,6 +370,25 @@ int main()
          
          // glDrawArrays(GL_TRIANGLES, 0, 3600);
         glDrawElements(GL_TRIANGLE_STRIP, cntInd, GL_UNSIGNED_INT, NULL);
+
+        // Draw inside object
+        glClear(GL_DEPTH_BUFFER_BIT);
+        inShader.Use();
+        // Get the uniform locations
+        modelLoc = glGetUniformLocation(inShader.Program, "model");
+        viewLoc  = glGetUniformLocation(inShader.Program,  "view");
+        projLoc  = glGetUniformLocation(inShader.Program,  "projection");
+        // Pass the matrices to the shader
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+        // Draw the container (using container's vertex attributes)
+        glBindVertexArray(incontainerVAO);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+
+
 
         glBindVertexArray(0);
 
