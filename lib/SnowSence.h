@@ -18,7 +18,7 @@ using namespace std;
 
 
 struct snowflack{
-	GLuint size;
+	GLfloat size;
 	GLfloat posX,posY,posZ;
 	GLfloat speed;
 };
@@ -38,8 +38,8 @@ public:
 	
 	vector<snowflack> snowArray;
 	void generate();
-	void show();
-	void drawCube(snowflack);
+	void show(GLuint);
+	void drawCube(snowflack,GLuint);
 private:
 	GLuint SVBO;
 	GLuint VertexArrayID;

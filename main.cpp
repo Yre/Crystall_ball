@@ -90,6 +90,7 @@ int main()
     Shader lightingShader("shader/phong.vs", "shader/phong.frag");
     Shader skyboxShader("shader/skybox.vs","shader/skybox.frag");
     Shader inShader("shader/inphong.vs","shader/inphong.frag");
+    Shader snowShader("shader/snow.vs","shader/snow.frag");
 
     int i, j;
     int numbOfTri = 41*41*2;
@@ -300,7 +301,7 @@ int main()
     faces.push_back("img/skybox/front.bmp");
     GLuint cubemapTexture = loadCubemap(faces);
 
-    SnowSence snowSence(50, 0.03, 0, 0.3);
+    SnowSence snowSence(100, 0.01, 0, 0.3);
 
     // Game loop
     while (!glfwWindowShouldClose(window)){
@@ -372,38 +373,35 @@ int main()
          // glDrawArrays(GL_TRIANGLES, 0, 3600);
         glDrawElements(GL_TRIANGLE_STRIP, cntInd, GL_UNSIGNED_INT, NULL);
 
-        // Draw inside object
+        // // Draw inside object
+        // glClear(GL_DEPTH_BUFFER_BIT);
+        // inShader.Use();
+        // // Get the uniform locations
+        // modelLoc = glGetUniformLocation(inShader.Program, "model");
+        // viewLoc  = glGetUniformLocation(inShader.Program,  "view");
+        // projLoc  = glGetUniformLocation(inShader.Program,  "projection");
+        // // Pass the matrices to the shader
+        // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        // glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+        // // Draw the container (using container's vertex attributes)
+        // glBindVertexArray(incontainerVAO);
+        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        // glDrawArrays(GL_TRIANGLES, 0, 36);
+        // glBindVertexArray(0);
+
+
         glClear(GL_DEPTH_BUFFER_BIT);
-        inShader.Use();
-        // Get the uniform locations
-        modelLoc = glGetUniformLocation(inShader.Program, "model");
-        viewLoc  = glGetUniformLocation(inShader.Program,  "view");
-        projLoc  = glGetUniformLocation(inShader.Program,  "projection");
-        // Pass the matrices to the shader
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-        // Draw the container (using container's vertex attributes)
-        glBindVertexArray(incontainerVAO);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-
-
-
-        glBindVertexArray(0);
-
-
-
-        Shader snowShader("shader/snow.vs","shader/snow.frag");
         snowShader.Use(); 
-        glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(glm::mat4(glm::mat3(camera.GetViewMatrix()))));
+        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
         glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-        glClear(GL_DEPTH_BUFFER_BIT);
-        snowSence.show();
-
+        GLuint center = glGetUniformLocation(snowShader.Program, "center");
+        snowSence.show(center);
+            // glBindVertexArray(incontainerVAO);
+            // glDrawArrays(GL_TRIANGLES, 0, 36);
+            // glBindVertexArray(0);
 
         // Swap the screen buffers
         glfwSwapBuffers(window);
