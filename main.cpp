@@ -23,7 +23,7 @@ using namespace std;
 #include "lib/Shader.h"
 #include "lib/Camera.h"
 #include "lib/bitmap.h"
-
+#include "lib/SnowSence.h"
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -267,7 +267,7 @@ int main()
     glGenBuffers(1, &skyboxVBO);
 
     glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
 
     glBindVertexArray(skyboxVAO);
 
@@ -278,13 +278,14 @@ int main()
 
     // Then, we set the light's VAO (VBO stays the same. After all, the vertices are the same for the light object (also a 3D cube))
     GLuint lightVAO;
+    GLuint m_vboIndex;
     glGenVertexArrays(1, &lightVAO);
     glGenBuffers(1, &m_vboIndex);
 
     glBindVertexArray(lightVAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    GLuint m_vboIndex;
+    
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vboIndex);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, cntInd * sizeof(GLuint), indices, GL_STATIC_DRAW);
@@ -299,7 +300,7 @@ int main()
     faces.push_back("img/skybox/front.bmp");
     GLuint cubemapTexture = loadCubemap(faces);
 
-    SnowSence snowSence(50, 0.001, 0, 0.3);
+    SnowSence snowSence(50, 0.03, 0, 0.3);
 
     // Game loop
     while (!glfwWindowShouldClose(window)){
@@ -393,6 +394,14 @@ int main()
         glBindVertexArray(0);
 
 
+
+        Shader snowShader("shader/snow.vs","shader/snow.frag");
+        snowShader.Use(); 
+        glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(glm::mat4(glm::mat3(camera.GetViewMatrix()))));
+        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+        glClear(GL_DEPTH_BUFFER_BIT);
         snowSence.show();
 
 

@@ -3,7 +3,7 @@ LD = g++
 CPPFLAGS = -O3 -std=c++11
 LDFLAGS =
 TARGET = hw3
-OBJS = main.o bitmap.o
+OBJS = main.o SnowSence.o bitmap.o 
 OS = $(shell uname)
 
 ifeq ($(OS),Darwin)
@@ -17,6 +17,9 @@ default: $(OBJS)
 
 main.o: main.cpp
 	$(CPP) -c $(CPPFLAGS) main.cpp
+
+SnowSence.o: src/SnowSence.cpp lib/SnowSence.h
+	$(CPP) -c $(CPPFLAGS) src/SnowSence.cpp
 
 bitmap.o: src/bitmap.cxx lib/bitmap.h
 	$(CPP) -c $(CPPFLAGS) src/bitmap.cxx

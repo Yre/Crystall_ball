@@ -1,9 +1,21 @@
 #ifndef SNOWSENCE_H
 #define SNOWSENCE_H
 
-#include <OpenGL/gl.h>
 #include <vector>
 using namespace std;
+
+#define GLEW_STATIC
+#include <GL/glew.h>
+
+// GLFW
+#include <GLFW/glfw3.h>
+
+// GLM Mathematics
+#define GLM_FORCE_RADIANS // force everything in radian
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 struct snowflack{
 	GLuint size;
@@ -13,8 +25,9 @@ struct snowflack{
 
 class SnowSence{
 public:
-	SnowSence(GLuint numbOfFlack, GLfloat maxSize, GLfloat rageLevel, GLfloat range);
-	GLuint numbOfFlack;
+	SnowSence();
+	SnowSence(GLuint number, GLfloat size, GLfloat rage, GLfloat range);
+	GLuint numberOfFlack;
 	GLfloat maxSize;
 	GLfloat rageLevel;
 	GLfloat snowRange;
@@ -26,6 +39,7 @@ public:
 	vector<snowflack> snowArray;
 	void generate();
 	void show();
+	void drawCube(snowflack);
 private:
 	GLuint SVBO;
 	GLuint VertexArrayID;
