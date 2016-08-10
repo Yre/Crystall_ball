@@ -89,7 +89,7 @@ int main()
     // Build and compile our shader program
     Shader lightingShader("shader/phong.vs", "shader/phong.frag");
     Shader skyboxShader("shader/skybox.vs","shader/skybox.frag");
-    Shader inShader("shader/inphong.vs","shader/inphong.frag");
+
 
     int i, j;
     int numbOfTri = 41*41*2;
@@ -98,7 +98,7 @@ int main()
 
     int indicator = 0, cnt = 0, cntInd = 0;
     int lats = 40, longs = 40;
-    double radius = 0.5; // radius here!!
+    double radius = 0.3; // radius here!!
     for(i = 0; i <= lats; i++) {
         double lat0 = glm::pi<double>() * (-0.5 + (double) (i - 1) / lats);
         double z0  = sin(lat0);
@@ -176,49 +176,6 @@ int main()
          1.0f, -1.0f,  1.0f
     };
 
- GLfloat invertices[] = {
-        -0.1f, -0.1f, 0.f,  0.0f,  0.0f, -1.0f,
-         0.1f, -0.1f, 0.f,  0.0f,  0.0f, -1.0f,
-         0.1f,  0.1f, 0.f,  0.0f,  0.0f, -1.0f,
-         0.1f,  0.1f, 0.f,  0.0f,  0.0f, -1.0f,
-        -0.1f,  0.1f, 0.f,  0.0f,  0.0f, -1.0f,
-        -0.1f, -0.1f, 0.f,  0.0f,  0.0f, -1.0f,
-
-        // -0.1f, -0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
-        //  0.1f, -0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
-        //  0.1f,  0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
-        //  0.1f,  0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
-        // -0.1f,  0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
-        // -0.1f, -0.1f,  0.1f,  0.0f,  0.0f,  1.0f,
-
-        // -0.1f,  0.1f,  0.1f, -1.0f,  0.0f,  0.0f,
-        // -0.1f,  0.1f, -0.1f, -1.0f,  0.0f,  0.0f,
-        // -0.1f, -0.1f, -0.1f, -1.0f,  0.0f,  0.0f,
-        // -0.1f, -0.1f, -0.1f, -1.0f,  0.0f,  0.0f,
-        // -0.1f, -0.1f,  0.1f, -1.0f,  0.0f,  0.0f,
-        // -0.1f,  0.1f,  0.1f, -1.0f,  0.0f,  0.0f,
-
-        //  0.1f,  0.1f,  0.1f,  1.0f,  0.0f,  0.0f,
-        //  0.1f,  0.1f, -0.1f,  1.0f,  0.0f,  0.0f,
-        //  0.1f, -0.1f, -0.1f,  1.0f,  0.0f,  0.0f,
-        //  0.1f, -0.1f, -0.1f,  1.0f,  0.0f,  0.0f,
-        //  0.1f, -0.1f,  0.1f,  1.0f,  0.0f,  0.0f,
-        //  0.1f,  0.1f,  0.1f,  1.0f,  0.0f,  0.0f,
-
-        // -0.1f, -0.1f, -0.1f,  0.0f, -1.0f,  0.0f,
-        //  0.1f, -0.1f, -0.1f,  0.0f, -1.0f,  0.0f,
-        //  0.1f, -0.1f,  0.1f,  0.0f, -1.0f,  0.0f,
-        //  0.1f, -0.1f,  0.1f,  0.0f, -1.0f,  0.0f,
-        // -0.1f, -0.1f,  0.1f,  0.0f, -1.0f,  0.0f,
-        // -0.1f, -0.1f, -0.1f,  0.0f, -1.0f,  0.0f,
-
-        // -0.1f,  0.1f, -0.1f,  0.0f,  1.0f,  0.0f,
-        //  0.1f,  0.1f, -0.1f,  0.0f,  1.0f,  0.0f,
-        //  0.1f,  0.1f,  0.1f,  0.0f,  1.0f,  0.0f,
-        //  0.1f,  0.1f,  0.1f,  0.0f,  1.0f,  0.0f,
-        // -0.1f,  0.1f,  0.1f,  0.0f,  1.0f,  0.0f,
-        // -0.1f,  0.1f, -0.1f,  0.0f,  1.0f,  0.0f
-    };
 
     // First, set the container's VAO (and VBO)
     GLuint VBO, containerVAO;
@@ -231,27 +188,6 @@ int main()
 
 
     glBindVertexArray(containerVAO);        
-        // Position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
-        glEnableVertexAttribArray(0);
-
-        // Normal attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(1);
-    glBindVertexArray(0);
-
-
-    // Second, set the inside object's VAO (and VBO)
-    GLuint inVBO, incontainerVAO;
-    glGenVertexArrays(1, &incontainerVAO);
-    glGenBuffers(1, &inVBO);
-
-        
-    glBindBuffer(GL_ARRAY_BUFFER, inVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(invertices), invertices, GL_STATIC_DRAW);
-
-
-    glBindVertexArray(incontainerVAO);        
         // Position attribute
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
@@ -372,26 +308,6 @@ int main()
          // glDrawArrays(GL_TRIANGLES, 0, 3600);
         glDrawElements(GL_TRIANGLE_STRIP, cntInd, GL_UNSIGNED_INT, NULL);
 
-        glBindVertexArray(0);
-
-
-        // Draw content
-        glClear(GL_DEPTH_BUFFER_BIT);
-        // Use cooresponding shader when setting uniforms/drawing objects
-        inShader.Use();
-
-        // Get the uniform locations
-        modelLoc = glGetUniformLocation(lightingShader.Program, "model");
-        viewLoc  = glGetUniformLocation(lightingShader.Program,  "view");
-        projLoc  = glGetUniformLocation(lightingShader.Program,  "projection");
-        // Pass the matrices to the shader
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-        // Draw the container (using container's vertex attributes)
-        glBindVertexArray(incontainerVAO);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
 
         // Swap the screen buffers
