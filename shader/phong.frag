@@ -1,28 +1,39 @@
-// CS148 Summer 2016 Homework 3 - Shaders
+
 
 #version 330 core
-out vec4 color;
+in vec3 Normal;
+in vec3 Position;
+//in vec2 TexCoords;
 
-in vec3 FragPos;  
-in vec3 Normal;  
-  
-uniform vec3 lightPos; 
 uniform vec3 viewPos;
-uniform vec3 lightColor;
-uniform vec3 objectColor;
+//uniform sampler2D texture_diffuse1;
+//uniform sampler2D texture_reflection1;
+uniform samplerCube skybox;
+
+out vec4 color;
 
 void main()
 {
-    // TODO: Replace with your code...
-    // If gl_Position was set correctly, this gives a totally red cube
+    /*
+     // Diffuse
+     vec4 diffuse_color = texture(texture_diffuse1, TexCoords);
+     // Reflection
+     vec3 I = normalize(Position - cameraPos);
+     vec3 R = reflect(I, normalize(Normal));
+     float reflect_intensity = texture(texture_reflection1, TexCoords).r;
+     vec4 reflect_color;
+     if(reflect_intensity > 0.1) // Only sample reflections when above a certain treshold
+     reflect_color = texture(skybox, R) * reflect_intensity;
+     // Combine them
+     color = diffuse_color + reflect_color;
+     */
     
-
-	vec3 n = normalize(Normal);
-	vec3 l = normalize(lightPos-FragPos); 
-	vec3 e = normalize(viewPos-FragPos);
-	vec3 h = (e+l) / length(e+l);
-	
-	
-	vec3 result = (.1f+max(dot(n,l),0.0)+0.5f*pow(dot(h,n),64)) * lightColor * objectColor;
-	color = vec4(result, 1.0f);
-} 
+    
+    
+    ///*
+    float ratio = 1.00 / 2;
+    vec3 I = normalize(Position - viewPos);
+    vec3 R = refract(I, normalize(Normal), ratio);
+    color = texture(skybox, R);
+    //*/
+}
