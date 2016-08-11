@@ -434,19 +434,19 @@ int main()
 //================================================================================================
 
     vector<const GLchar*> faces;
-    // faces.push_back("img/skybox/right.bmp");
-    // faces.push_back("img/skybox/left.bmp");
-    // faces.push_back("img/skybox/bottom.bmp");
-    // faces.push_back("img/skybox/top.bmp");
-    // faces.push_back("img/skybox/back.bmp");
-    // faces.push_back("img/skybox/front.bmp");
+    faces.push_back("img/skybox/right.bmp");
+    faces.push_back("img/skybox/left.bmp");
+    faces.push_back("img/skybox/bottom.bmp");
+    faces.push_back("img/skybox/top.bmp");
+    faces.push_back("img/skybox/back.bmp");
+    faces.push_back("img/skybox/front.bmp");
 
-    faces.push_back("img/skybox/criminal-impact_ft.bmp");
-    faces.push_back("img/skybox/criminal-impact_bk.bmp");
-    faces.push_back("img/skybox/criminal-impact_dn.bmp");
-    faces.push_back("img/skybox/criminal-impact_up.bmp");
-    faces.push_back("img/skybox/criminal-impact_rt.bmp");
-    faces.push_back("img/skybox/criminal-impact_lf.bmp");
+    // faces.push_back("img/skybox/criminal-impact_ft.bmp");
+    // faces.push_back("img/skybox/criminal-impact_bk.bmp");
+    // faces.push_back("img/skybox/criminal-impact_dn.bmp");
+    // faces.push_back("img/skybox/criminal-impact_up.bmp");
+    // faces.push_back("img/skybox/criminal-impact_rt.bmp");
+    // faces.push_back("img/skybox/criminal-impact_lf.bmp");
 
     // faces.push_back("img/skybox/cdruidcove_ft.bmp");
     // faces.push_back("img/skybox/druidcove_bk.bmp");
@@ -537,11 +537,11 @@ int main()
         // glDepthMask(GL_TRUE);
         
         //**************** Draw bunny object**********************
-        inShader.Use();
+        lightingShader.Use();
         // Get the uniform locations
-        modelLoc = glGetUniformLocation(inShader.Program, "model");
-        viewLoc  = glGetUniformLocation(inShader.Program,  "view");
-        projLoc  = glGetUniformLocation(inShader.Program,  "projection");
+        modelLoc = glGetUniformLocation(lightingShader.Program, "model");
+        viewLoc  = glGetUniformLocation(lightingShader.Program,  "view");
+        projLoc  = glGetUniformLocation(lightingShader.Program,  "projection");
         // Pass the matrices to the shader
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -551,7 +551,7 @@ int main()
         lightColorLoc  = glGetUniformLocation(lightingShader.Program, "lightColor");
         lightPosLoc    = glGetUniformLocation(lightingShader.Program, "lightPos");
         viewPosLoc     = glGetUniformLocation(lightingShader.Program, "viewPos");
-        glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
+        glUniform3f(objectColorLoc, 1.0f, 1.0f, 1.0f);
         glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f);
         glUniform3f(lightPosLoc,    lightPos.x, lightPos.y, lightPos.z);
         glUniform3f(viewPosLoc,     camera.Position.x, camera.Position.y, camera.Position.z);

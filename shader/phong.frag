@@ -46,9 +46,9 @@ void main(void)
     reflectColor    = texture(skybox, reflectDir);
     
     color = mix(refractColor, reflectColor, v_fresnel);
-    return ;
+    //return ;
     
-    //
+    /*
 
     vec4 refractionColor = texture( skybox, normalize( v_refraction ) );
     vec4 reflectionColor = texture( skybox, normalize( v_reflection ) );
@@ -56,9 +56,8 @@ void main(void)
     color = mix( refractionColor, reflectionColor, v_fresnel );
     
     //return;
+    */
     
-   
-    //vec3 result = (color.xyz + 0.8*max(dot(n,l),0.0)+0.5f*pow(dot(h,n),64)) * lightColor * objectColor;
-
-    //color = mix(color, vec4(result, 1.0f), 0.4);
+    vec3 result = (0.3+0.2*max(dot(n,l),0.0)+0.3f*pow(dot(h,n),64)) * lightColor * objectColor;
+    color = color + vec4(result, 1.0f)*0.3;
 }
