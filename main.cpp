@@ -225,6 +225,7 @@ int main()
         -0.1f,  0.1f, -0.1f,  0.0f,  1.0f,  0.0f
     };
 
+
     // First, set the container's VAO (and VBO)
     GLuint VBO, containerVAO;
     glGenVertexArrays(1, &containerVAO);
@@ -408,6 +409,7 @@ int main()
             // glDrawArrays(GL_TRIANGLES, 0, 36);
             // glBindVertexArray(0);
 
+
         // Swap the screen buffers
         glfwSwapBuffers(window);
     }
@@ -506,7 +508,7 @@ GLuint loadCubemap(vector<const GLchar*> faces)
     return textureID;
 }
 
-void showSnow(){
 
-    
-}
+
+
+
