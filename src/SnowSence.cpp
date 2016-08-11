@@ -81,6 +81,21 @@ bool SnowSence::outRange(snowflack flack){
 }
 
 void SnowSence::setMode(GLuint m){
+	if(m==1)
+		for(int i=0;i<numberOfFlack;i++)
+		{
+			snowArray[i].color = glm::vec3(1.0,1.0,1.0);
+			if(mode==3&&snowArray[i].onFace)
+			{
+				snowArray[i].onFace=false;
+				GLfloat speedX,speedY,speedZ;
+				speedX = (double(rand())/(RAND_MAX)-0.5)/500;
+				speedY = (double(rand())/(RAND_MAX)-0.5)/200;
+				speedZ = (double(rand())/(RAND_MAX)-0.5)/500;
+				snowArray[i].speed = glm::vec3(speedX,speedY,speedZ);
+				snowArray[i].pos *= 0.99;
+			}
+		}
 	mode = m;
 }
 
@@ -155,6 +170,7 @@ void SnowSence::drawCube(snowflack flack,GLuint center,GLuint sideLength){
 
 void SnowSence::move_rand()
 {
+
 	for(int i=0;i<numberOfFlack;i++)
 	{
 		snowArray[i].pos += snowArray[i].speed;
@@ -169,7 +185,21 @@ void SnowSence::move_rand()
 
 void SnowSence::move_grav()
 {
-	
+	for(int i=0;i<numberOfFlack;i++)
+	{
+		// if(snowArray[i].speed==glm::vec3(0,0,0))
+		// 	continue;
+		snowArray[i].speed += (acceleration*5.0f);
+		snowArray[i].pos += snowArray[i].speed;
+		if(outRange(snowArray[i]))
+		{
+			snowArray[i].pos -= snowArray[i].speed;
+			if(snowArray[i].pos.y<0.2*snowRange)
+				snowArray[i].speed = snowArray[i].speed - 2*dot(snowArray[i].pos,snowArray[i].speed)/dot(snowArray[i].pos,snowArray[i].pos)*snowArray[i].pos;
+			else
+				snowArray[i].speed -= (acceleration*5.0f);
+		}
+	}
 }
 
 void SnowSence::move_wind()
@@ -193,7 +223,7 @@ void SnowSence::move_wind()
 				snowArray[i].hitPoint = snowRange-snowArray[i].pos.y;
 				snowArray[i].color.r = snowArray[i].color.g = 0.2; 
 				// snowArray[i].speed = snowArray[i].speed - 2*dot(snowArray[i].pos,snowArray[i].speed)/dot(snowArray[i].pos,snowArray[i].pos)*snowArray[i].pos;
-				// snowArray[i].speed=glm::vec3(0,0,0);
+				snowArray[i].speed=glm::vec3(0,0,0);
 			}
 		}
 		else
