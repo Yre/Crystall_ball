@@ -43,7 +43,7 @@ GLfloat lastY  =  HEIGHT / 2.0;
 bool    keys[1024];
 
 // Light attributes
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(1.2f, -1.0f, 2.0f);
 
 // Deltatime
 GLfloat deltaTime = 0.0f;	// Time between current frame and last frame
@@ -386,19 +386,34 @@ int main()
 //================================================================================================
 
     vector<const GLchar*> faces;
-    faces.push_back("img/skybox/right.bmp");
-    faces.push_back("img/skybox/left.bmp");
-    faces.push_back("img/skybox/bottom.bmp");
-    faces.push_back("img/skybox/top.bmp");
-    faces.push_back("img/skybox/back.bmp");
-    faces.push_back("img/skybox/front.bmp");
+    // faces.push_back("img/skybox/right.bmp");
+    // faces.push_back("img/skybox/left.bmp");
+    // faces.push_back("img/skybox/bottom.bmp");
+    // faces.push_back("img/skybox/top.bmp");
+    // faces.push_back("img/skybox/back.bmp");
+    // faces.push_back("img/skybox/front.bmp");
+
+    faces.push_back("img/skybox/criminal-impact_ft.bmp");
+    faces.push_back("img/skybox/criminal-impact_bk.bmp");
+    faces.push_back("img/skybox/criminal-impact_dn.bmp");
+    faces.push_back("img/skybox/criminal-impact_up.bmp");
+    faces.push_back("img/skybox/criminal-impact_rt.bmp");
+    faces.push_back("img/skybox/criminal-impact_lf.bmp");
+
+    // faces.push_back("img/skybox/cdruidcove_ft.bmp");
+    // faces.push_back("img/skybox/druidcove_bk.bmp");
+    // faces.push_back("img/skybox/druidcove_dn.bmp");
+    // faces.push_back("img/skybox/druidcove_up.bmp");
+    // faces.push_back("img/skybox/druidcove_rt.bmp");
+    // faces.push_back("img/skybox/druidcove_lf.bmp");
+
     GLuint cubemapTexture = loadCubemap(faces);
     GLchar  * base = "img/base_texture_wood.bmp";
     GLuint base_texture = loadBaseTexture(base);
     GLchar *floor = "img/wood_pattern_texture_4.bmp";
     GLuint floorTexture = loadBaseTexture(floor);
 
-    SnowSence snowSence(500, 0.02, 0, 0.3);//number, size, rage, range
+    SnowSence snowSence(800, 0.02, 0, 0.3);//number, size, rage, range
 
     // Game loop
     while (!glfwWindowShouldClose(window)){
@@ -451,15 +466,17 @@ int main()
         
 
         // Use cooresponding shader when setting uniforms/drawing objects
+        glDepthMask(GL_FALSE);
         lightingShader.Use();
         GLint objectColorLoc = glGetUniformLocation(lightingShader.Program, "objectColor");
         GLint lightColorLoc  = glGetUniformLocation(lightingShader.Program, "lightColor");
         GLint lightPosLoc    = glGetUniformLocation(lightingShader.Program, "lightPos");
         GLint viewPosLoc     = glGetUniformLocation(lightingShader.Program, "viewPos");
-        glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
+        glUniform3f(objectColorLoc, 1.0f, 1.0f, 1.0f);
         glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f);
         glUniform3f(lightPosLoc,    lightPos.x, lightPos.y, lightPos.z);
         glUniform3f(viewPosLoc,     camera.Position.x, camera.Position.y, camera.Position.z);
+
 
         // Get the uniform locations
         GLint modelLoc = glGetUniformLocation(lightingShader.Program, "model");
@@ -481,7 +498,7 @@ int main()
          // glDrawArrays(GL_TRIANGLES, 0, 3600);
         glDrawElements(GL_TRIANGLE_STRIP, cntInd, GL_UNSIGNED_INT, NULL);
 
-        
+        glDepthMask(GL_TRUE);
         //**************** Draw inside object**********************
         // glClear(GL_DEPTH_BUFFER_BIT);
         // inShader.Use();
