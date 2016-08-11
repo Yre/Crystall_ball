@@ -434,19 +434,34 @@ int main()
 //================================================================================================
 
     vector<const GLchar*> faces;
-    faces.push_back("img/skybox/right.bmp");
-    faces.push_back("img/skybox/left.bmp");
-    faces.push_back("img/skybox/bottom.bmp");
-    faces.push_back("img/skybox/top.bmp");
-    faces.push_back("img/skybox/back.bmp");
-    faces.push_back("img/skybox/front.bmp");
+    // faces.push_back("img/skybox/right.bmp");
+    // faces.push_back("img/skybox/left.bmp");
+    // faces.push_back("img/skybox/bottom.bmp");
+    // faces.push_back("img/skybox/top.bmp");
+    // faces.push_back("img/skybox/back.bmp");
+    // faces.push_back("img/skybox/front.bmp");
+
+    faces.push_back("img/skybox/criminal-impact_ft.bmp");
+    faces.push_back("img/skybox/criminal-impact_bk.bmp");
+    faces.push_back("img/skybox/criminal-impact_dn.bmp");
+    faces.push_back("img/skybox/criminal-impact_up.bmp");
+    faces.push_back("img/skybox/criminal-impact_rt.bmp");
+    faces.push_back("img/skybox/criminal-impact_lf.bmp");
+
+    // faces.push_back("img/skybox/cdruidcove_ft.bmp");
+    // faces.push_back("img/skybox/druidcove_bk.bmp");
+    // faces.push_back("img/skybox/druidcove_dn.bmp");
+    // faces.push_back("img/skybox/druidcove_up.bmp");
+    // faces.push_back("img/skybox/druidcove_rt.bmp");
+    // faces.push_back("img/skybox/druidcove_lf.bmp");
+
     GLuint cubemapTexture = loadCubemap(faces);
     GLchar  * base = "img/base_texture_wood.bmp";
     GLuint base_texture = loadBaseTexture(base);
     GLchar *floor = "img/wood_pattern_texture_4.bmp";
     GLuint floorTexture = loadBaseTexture(floor);
 
-    SnowSence snowSence(500, 0.02, 0, 0.3);//number, size, rage, range
+    SnowSence snowSence(800, 0.02, 0, 0.3);//number, size, rage, range
 
     // Game loop
     while (!glfwWindowShouldClose(window)){
@@ -499,15 +514,17 @@ int main()
         
 
         // Use cooresponding shader when setting uniforms/drawing objects
+        glDepthMask(GL_FALSE);
         lightingShader.Use();
         GLint objectColorLoc = glGetUniformLocation(lightingShader.Program, "objectColor");
         GLint lightColorLoc  = glGetUniformLocation(lightingShader.Program, "lightColor");
         GLint lightPosLoc    = glGetUniformLocation(lightingShader.Program, "lightPos");
         GLint viewPosLoc     = glGetUniformLocation(lightingShader.Program, "viewPos");
-        glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
+        glUniform3f(objectColorLoc, 1.0f, 1.0f, 1.0f);
         glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f);
         glUniform3f(lightPosLoc,    lightPos.x, lightPos.y, lightPos.z);
         glUniform3f(viewPosLoc,     camera.Position.x, camera.Position.y, camera.Position.z);
+
 
         // Get the uniform locations
         GLint modelLoc = glGetUniformLocation(lightingShader.Program, "model");
@@ -554,6 +571,25 @@ int main()
         glDrawElements(GL_TRIANGLES, bunny_elements.size()*3, GL_UNSIGNED_SHORT, 0);
         // cout<<bunny_elements.size()*3<<endl;
         glBindVertexArray(0);
+
+        glDepthMask(GL_TRUE);
+        //**************** Draw inside object**********************
+        // glClear(GL_DEPTH_BUFFER_BIT);
+        // inShader.Use();
+        // // Get the uniform locations
+        // modelLoc = glGetUniformLocation(inShader.Program, "model");
+        // viewLoc  = glGetUniformLocation(inShader.Program,  "view");
+        // projLoc  = glGetUniformLocation(inShader.Program,  "projection");
+        // // Pass the matrices to the shader
+        // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        // glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+        // // Draw the container (using container's vertex attributes)
+        // glBindVertexArray(incontainerVAO);
+        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        // glDrawArrays(GL_TRIANGLES, 0, 36);
+        // glBindVertexArray(0);
+
         
         //**************** Draw base object**********************
         // glClear(GL_DEPTH_BUFFER_BIT);

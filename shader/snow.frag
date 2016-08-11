@@ -10,6 +10,6 @@ void main()
 {
 
 	float a = (length(Position - center))/sideLength * 2 - 1;
-	float myAlpha = exp(-a*10);
+	float myAlpha = exp(-a*10)*0.7;
 	color = vec4(Color, myAlpha);
 } 
