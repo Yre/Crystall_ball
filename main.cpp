@@ -286,9 +286,11 @@ int main()
         -0.1f,  0.1f, -0.1f,  0.0f,  1.0f,  0.0f
     };
 
+
 //================================================================================================
 
     /*****************sphere VBO *****************/
+
     GLuint VBO, containerVAO;
     glGenVertexArrays(1, &containerVAO);
     glGenBuffers(1, &VBO);
@@ -477,6 +479,7 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 40*2*3);
         glBindVertexArray(0);
 
+
         // Swap the screen buffers
         glfwSwapBuffers(window);
     }
@@ -574,6 +577,7 @@ GLuint loadCubemap(vector<const GLchar*> faces)
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     return textureID;
 }
+
 
 GLuint loadBaseTexture(GLchar* b_texture){
     GLuint textureID;
