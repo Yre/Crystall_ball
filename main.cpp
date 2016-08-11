@@ -498,23 +498,12 @@ int main()
         glBindVertexArray(0);
         glDepthMask(GL_TRUE);
 
-        //**************** Draw floor object**********************
-        glClear(GL_DEPTH_BUFFER_BIT);
-        floorShader.Use();   
-        glUniformMatrix4fv(glGetUniformLocation(floorShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
-        glUniformMatrix4fv(glGetUniformLocation(floorShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        glBindVertexArray(floorVAO);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, floorTexture);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glBindVertexArray(0);
-
+        
 
         
 
         // Use cooresponding shader when setting uniforms/drawing objects
-        glDepthMask(GL_FALSE);
+        // glDepthMask(GL_FALSE);
         lightingShader.Use();
         GLint objectColorLoc = glGetUniformLocation(lightingShader.Program, "objectColor");
         GLint lightColorLoc  = glGetUniformLocation(lightingShader.Program, "lightColor");
@@ -545,7 +534,7 @@ int main()
          
          // glDrawArrays(GL_TRIANGLES, 0, 3600);
         glDrawElements(GL_TRIANGLE_STRIP, cntInd, GL_UNSIGNED_INT, NULL);
-
+        // glDepthMask(GL_TRUE);
         
         //**************** Draw bunny object**********************
         inShader.Use();
@@ -572,7 +561,7 @@ int main()
         // cout<<bunny_elements.size()*3<<endl;
         glBindVertexArray(0);
 
-        glDepthMask(GL_TRUE);
+        
         //**************** Draw inside object**********************
         // glClear(GL_DEPTH_BUFFER_BIT);
         // inShader.Use();
@@ -591,6 +580,32 @@ int main()
         // glBindVertexArray(0);
 
         
+        
+
+        //**************** Draw snow object**********************
+        // glClear(GL_DEPTH_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+        snowShader.Use(); 
+        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
+        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        GLuint center = glGetUniformLocation(snowShader.Program, "center");
+        GLuint length = glGetUniformLocation(snowShader.Program, "sideLength");
+        snowSence.show(center,length);
+        glEnable(GL_DEPTH_TEST);
+        
+
+        //**************** Draw floor object**********************
+        floorShader.Use();   
+        glUniformMatrix4fv(glGetUniformLocation(floorShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
+        glUniformMatrix4fv(glGetUniformLocation(floorShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glBindVertexArray(floorVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
+
         //**************** Draw base object**********************
         // glClear(GL_DEPTH_BUFFER_BIT);
         baseShader.Use();   
@@ -601,20 +616,6 @@ int main()
         glBindTexture(GL_TEXTURE_2D, base_texture);
         glDrawArrays(GL_TRIANGLES, 0, 40*2*3);
         glBindVertexArray(0);
-
-        //**************** Draw snow object**********************
-        glClear(GL_DEPTH_BUFFER_BIT);
-
-        snowShader.Use(); 
-        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
-        glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        GLuint center = glGetUniformLocation(snowShader.Program, "center");
-        GLuint length = glGetUniformLocation(snowShader.Program, "sideLength");
-        snowSence.show(center,length);
-        
-        
-
         
 
         
