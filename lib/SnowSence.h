@@ -22,6 +22,9 @@ struct snowflack{
 	//GLfloat posX,posY,posZ;
 	glm::vec3 pos;
 	glm::vec3 speed;
+	bool onFace;
+	glm::vec3 color;
+	GLfloat hitPoint;
 };
 
 class SnowSence{
@@ -47,6 +50,9 @@ private:
 	void drawCube(snowflack,GLuint,GLuint);
 	void generate();
 	glm::vec3 windAccelerate(glm::vec3);
+	void move_rand();
+	void move_grav();
+	void move_wind();
 };
 
 #endif
