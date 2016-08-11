@@ -301,7 +301,7 @@ int main()
     faces.push_back("img/skybox/front.bmp");
     GLuint cubemapTexture = loadCubemap(faces);
 
-    SnowSence snowSence(100, 0.01, 0, 0.3);
+    SnowSence snowSence(500, 0.02, 0, 0.3);//number, size, rage, range
 
     // Game loop
     while (!glfwWindowShouldClose(window)){
@@ -398,7 +398,8 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
         glUniformMatrix4fv(glGetUniformLocation(snowShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         GLuint center = glGetUniformLocation(snowShader.Program, "center");
-        snowSence.show(center);
+        GLuint length = glGetUniformLocation(snowShader.Program, "sideLength");
+        snowSence.show(center,length);
             // glBindVertexArray(incontainerVAO);
             // glDrawArrays(GL_TRIANGLES, 0, 36);
             // glBindVertexArray(0);

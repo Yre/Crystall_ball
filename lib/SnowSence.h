@@ -19,8 +19,9 @@ using namespace std;
 
 struct snowflack{
 	GLfloat size;
-	GLfloat posX,posY,posZ;
-	GLfloat speed;
+	//GLfloat posX,posY,posZ;
+	glm::vec3 pos;
+	glm::vec3 speed;
 };
 
 class SnowSence{
@@ -31,18 +32,19 @@ public:
 	GLfloat maxSize;
 	GLfloat rageLevel;
 	GLfloat snowRange;
-	GLfloat acceleration;
+	glm::vec3 acceleration;
 
-
-
-	
 	vector<snowflack> snowArray;
-	void generate();
-	void show(GLuint);
-	void drawCube(snowflack,GLuint);
+	
+	void show(GLuint,GLuint);
+
 private:
 	GLuint SVBO;
 	GLuint VertexArrayID;
+	bool outRange(snowflack);
+	void drawCube(snowflack,GLuint,GLuint);
+	void generate();
+	glm::vec3 windAccelerate(glm::vec3);
 };
 
 #endif
