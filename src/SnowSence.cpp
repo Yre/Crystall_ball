@@ -24,13 +24,19 @@ void SnowSence::generate(){
 		snowArray[i].size = maxSize * ((double) rand() / (RAND_MAX));
 		GLfloat theta = 2 * glm::pi<double>() * ((double) rand() / (RAND_MAX)); //0 ~ 2pi
 		GLfloat fai = glm::pi<double>() * (((double) rand() / (RAND_MAX))-0.5); // -pi/2 ~ pi/2
-		GLfloat posX, posY, posZ;
+		GLfloat posX, posY, posZ, speedX, speedY, speedZ;
 		posX = snowRange * cos(theta) * cos(fai) * 0.9;
 		posY = snowRange * sin(theta) * cos(fai) * 0.9;
 		posZ = snowRange * sin(fai) * 0.9;
-		snowArray[i].pos = glm::vec3(posX,posY,posZ);
+		speedX = (double(rand())/(RAND_MAX)-0.5)/500;
+		speedY = (double(rand())/(RAND_MAX)-0.5)/500;
+		speedZ = (double(rand())/(RAND_MAX)-0.5)/500;
 
-		snowArray[i].speed = glm::vec3(0.0f,sqrt(2 * acceleration.y * (snowArray[i].pos.y+snowRange)),0.0f);
+		snowArray[i].pos = glm::vec3(posX,posY,posZ);
+		// snowArray[i].speed = glm::vec3(0.0f,sqrt(2 * acceleration.y * (snowArray[i].pos.y+snowRange)),0.0f);
+		snowArray[i].speed = glm::vec3(speedX,speedY,speedZ);
+		snowArray[i].onFace=false;
+		snowArray[i].color=glm::vec3(1.0f,1.0f,1.0f);
 	}
 	glGenBuffers(1, &SVBO);
 	glGenVertexArrays(1, &VertexArrayID);
@@ -39,18 +45,21 @@ void SnowSence::generate(){
 }
 
 void SnowSence::show(GLuint center, GLuint length){
-
+	switch(mode)
+	{
+		case 1:
+			move_rand();
+			break;
+		case 2:
+			move_grav();
+			break;
+		case 3:
+			move_wind();
+			break;
+	}
 	glBindVertexArray(VertexArrayID);
-	
 	for (int i = 0; i < numberOfFlack; i++){
-		drawCube(snowArray[i],center,length);
-		snowArray[i].speed += acceleration + windAccelerate(snowArray[i].pos);
-		snowArray[i].pos += snowArray[i].speed;
-		if (outRange(snowArray[i])){
-			snowArray[i].pos -= snowArray[i].speed;
-			snowArray[i].speed = glm::vec3(0,0,0);
-			// snowArray[i].pos 
-		}
+		drawCube(snowArray[i],center,length);		
 	}
 }
 
@@ -119,6 +128,9 @@ void SnowSence::drawCube(snowflack flack,GLuint center,GLuint sideLength){
 		vertex_buffer[i*6]   = vertex_buffer[i*6]  *flack.size /2 + flack.pos.x;
 		vertex_buffer[i*6+1] = vertex_buffer[i*6+1]*flack.size /2 + flack.pos.y;
 		vertex_buffer[i*6+2] = vertex_buffer[i*6+2]*flack.size /2 + flack.pos.z;
+		vertex_buffer[i*6+3] = flack.color.r;
+		vertex_buffer[i*6+4] = flack.color.g;
+		vertex_buffer[i*6+5] = flack.color.b;
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, SVBO);
@@ -141,5 +153,73 @@ void SnowSence::drawCube(snowflack flack,GLuint center,GLuint sideLength){
 
 }
 
+void SnowSence::move_rand()
+{
+	for(int i=0;i<numberOfFlack;i++)
+	{
+		snowArray[i].pos += snowArray[i].speed;
+		if(outRange(snowArray[i]))
+		{
+			snowArray[i].pos -= snowArray[i].speed;
+			snowArray[i].speed = snowArray[i].speed - 2*dot(snowArray[i].pos,snowArray[i].speed)/dot(snowArray[i].pos,snowArray[i].pos)*snowArray[i].pos;
+			// snowArray[i].speed=glm::vec3(0,0,0);
+		}
+	}
+}
+
+void SnowSence::move_grav()
+{
+	
+}
+
+void SnowSence::move_wind()
+{
+	// snowArray[i].speed += acceleration + windAccelerate(snowArray[i].pos);
+	// 	snowArray[i].pos += snowArray[i].speed;
+	// 	if (outRange(snowArray[i])){
+	// 		snowArray[i].pos -= snowArray[i].speed;
+	// 		snowArray[i].speed = glm::vec3(0,0,0);
+	// 		// snowArray[i].pos 
+	// 	}
+	for(int i=0;i<numberOfFlack;i++)
+	{
+		if(!snowArray[i].onFace)
+		{
+			snowArray[i].pos += snowArray[i].speed;
+			if(outRange(snowArray[i]))
+			{
+				snowArray[i].pos -= snowArray[i].speed;
+				snowArray[i].onFace = true;
+				snowArray[i].hitPoint = snowRange-snowArray[i].pos.y;
+				snowArray[i].color.r = snowArray[i].color.g = 0.2; 
+				// snowArray[i].speed = snowArray[i].speed - 2*dot(snowArray[i].pos,snowArray[i].speed)/dot(snowArray[i].pos,snowArray[i].pos)*snowArray[i].pos;
+				// snowArray[i].speed=glm::vec3(0,0,0);
+			}
+		}
+		else
+		{
+			float oldphi = asin(snowArray[i].pos.y/snowRange);
+			float newphi = oldphi + 0.005f;
+			if( newphi < +glm::pi<double>()/2 )
+			{
+				snowArray[i].pos.y = snowRange * sin(newphi);
+				snowArray[i].pos.x = snowArray[i].pos.x *cos(newphi)/cos(oldphi);
+				snowArray[i].pos.z = snowArray[i].pos.z *cos(newphi)/cos(oldphi);
+				snowArray[i].color.r = snowArray[i].color.g = 1 - 0.8*(snowRange-snowArray[i].pos.y)/(snowArray[i].hitPoint);
+			}
+			else
+			{
+				GLfloat speedX,speedY,speedZ;
+				speedX = (double(rand())/(RAND_MAX)-0.5)/500;
+				speedY = (double(rand())/(RAND_MAX)-0.5)/200;
+				speedZ = (double(rand())/(RAND_MAX)-0.5)/500;
+				snowArray[i].speed = glm::vec3(speedX,speedY,speedZ);
+				snowArray[i].pos.y -= snowRange*0.05;
+				snowArray[i].onFace = false;
+				snowArray[i].color = glm::vec3(1.0,1.0,1.0);
+			}
+		}
+	}
+}
 
 

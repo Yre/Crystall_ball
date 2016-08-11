@@ -35,6 +35,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void do_movement(SnowSence&);
 GLuint loadCubemap(vector<const GLchar*> faces);
+GLuint loadBaseTexture(GLchar*);
 
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -95,14 +96,16 @@ int main()
     Shader skyboxShader("shader/skybox.vs","shader/skybox.frag");
     Shader inShader("shader/inphong.vs","shader/inphong.frag");
     Shader snowShader("shader/snow.vs","shader/snow.frag");
+    Shader baseShader("shader/base.vs","shader/base.frag");
+//================================================================================================
 
+    /*****************Sphere *****************/
     int i, j;
     int numbOfTri = 41*41*2;
     GLfloat vertices[numbOfTri*6];
     GLint indices[numbOfTri+100];
 
-    int indicator = 0, cnt = 0, cntInd = 0;
-    int lats = 40, longs = 40;
+    int indicator = 0, cnt = 0, cntInd = 0, lats = 40, longs = 40;
     double radius = 0.3; // radius here!!
     for(i = 0; i <= lats; i++) {
         double lat0 = glm::pi<double>() * (-0.5 + (double) (i - 1) / lats);
@@ -134,9 +137,67 @@ int main()
             indices[cntInd++] = indicator ++;
        }
        indices[cntInd++] = GL_PRIMITIVE_RESTART_FIXED_INDEX;
-   }
+    }
+    /************** BASE *******************/
+    GLint b_numbOfTri = 40*2;
+    GLfloat b_Vertices[b_numbOfTri*3 *5];
 
-   GLfloat skyboxVertices[] = {
+    GLint b_VerCnt = 0, b_cnt = 0;
+    GLfloat cut = 12.0;
+    double base_radius = 0.15; // base radius here!!
+    double base_height = 0.15;
+    double upper = sqrt(radius*radius - base_radius*base_radius);
+    //GLfloat upper = 0.2;
+    
+    for (i=0; i<cut; i++){
+        double pos = glm::pi<double>() * (i/cut) * 2;
+        b_Vertices[b_cnt++] = cos(pos) * base_radius;
+        b_Vertices[b_cnt++] = upper;
+        b_Vertices[b_cnt++] = sin(pos) * base_radius;
+        b_Vertices[b_cnt++] = 0.0; b_Vertices[b_cnt++] = 0.5;
+        b_VerCnt++;
+
+
+        b_Vertices[b_cnt++] = cos(pos) * base_radius;
+        b_Vertices[b_cnt++] = upper + base_height;
+        b_Vertices[b_cnt++] = sin(pos) * base_radius;
+
+        b_Vertices[b_cnt++] = 0.0; b_Vertices[b_cnt++] = 0.0;
+        b_VerCnt++;
+
+        pos = glm::pi<double>() * ((i+1)/cut) * 2;
+        b_Vertices[b_cnt++] = cos(pos) * base_radius;
+        b_Vertices[b_cnt++] = upper;
+        b_Vertices[b_cnt++] = sin(pos) * base_radius;
+        
+        b_Vertices[b_cnt++] = 0.5; b_Vertices[b_cnt++] = 0.5;
+        b_VerCnt++;
+
+        //
+        b_Vertices[b_cnt++] = cos(pos) * base_radius;
+        b_Vertices[b_cnt++] = upper + base_height;
+        b_Vertices[b_cnt++] = sin(pos) * base_radius;
+
+        b_Vertices[b_cnt++] = 0.5; b_Vertices[b_cnt++] = 0.0;
+        b_VerCnt++;
+        
+        b_Vertices[b_cnt++] = cos(pos) * base_radius;
+        b_Vertices[b_cnt++] = upper;
+        b_Vertices[b_cnt++] = sin(pos) * base_radius;
+
+        b_Vertices[b_cnt++] = 0.5; b_Vertices[b_cnt++] = 0.5;
+        b_VerCnt++;
+
+        pos = glm::pi<double>() * (i/cut) * 2;
+        b_Vertices[b_cnt++] = cos(pos) * base_radius;
+        b_Vertices[b_cnt++] = upper + base_height; 
+        b_Vertices[b_cnt++] = sin(pos) * base_radius;
+        b_Vertices[b_cnt++] = 0.0; b_Vertices[b_cnt++] = 0.0;
+        b_VerCnt++;       
+
+    }
+    /*****************skybox *****************/
+    GLfloat skyboxVertices[] = {
         // Positions          
         -1.0f,  1.0f, -1.0f,
         -1.0f, -1.0f, -1.0f,
@@ -225,15 +286,15 @@ int main()
         -0.1f,  0.1f, -0.1f,  0.0f,  1.0f,  0.0f
     };
 
-    // First, set the container's VAO (and VBO)
+//================================================================================================
+
+    /*****************sphere VBO *****************/
     GLuint VBO, containerVAO;
     glGenVertexArrays(1, &containerVAO);
     glGenBuffers(1, &VBO);
-
         
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, cnt * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
-
 
     glBindVertexArray(containerVAO);        
         // Position attribute
@@ -245,28 +306,24 @@ int main()
         glEnableVertexAttribArray(1);
     glBindVertexArray(0);
 
-    // Second, set the inside object's VAO (and VBO)
-    GLuint inVBO, incontainerVAO;
-    glGenVertexArrays(1, &incontainerVAO);
-    glGenBuffers(1, &inVBO);
-
+    /*****************base VBO *****************/
+    GLuint baseVBO, basecontainerVAO;
+    glGenVertexArrays(1, &basecontainerVAO);
+    glGenBuffers(1, &baseVBO);
         
-    glBindBuffer(GL_ARRAY_BUFFER, inVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(invertices), invertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, baseVBO);
+    glBufferData(GL_ARRAY_BUFFER, b_cnt * sizeof(GLfloat), b_Vertices, GL_STATIC_DRAW);
 
-
-    glBindVertexArray(incontainerVAO);        
+    glBindVertexArray(basecontainerVAO);        
         // Position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
 
-        // Normal attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
     glBindVertexArray(0);
 
-
-    // Setup skybox VAO
+    /*****************skybox VBO *****************/
     GLuint skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
@@ -281,7 +338,7 @@ int main()
     glBindVertexArray(0);
 
 
-    // Then, we set the light's VAO (VBO stays the same. After all, the vertices are the same for the light object (also a 3D cube))
+    /*****************light VBO *****************/
     GLuint lightVAO;
     GLuint m_vboIndex;
     glGenVertexArrays(1, &lightVAO);
@@ -291,10 +348,9 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     
-    
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vboIndex);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, cntInd * sizeof(GLuint), indices, GL_STATIC_DRAW);
-
+//================================================================================================
 
     vector<const GLchar*> faces;
     faces.push_back("img/skybox/right.bmp");
@@ -304,8 +360,12 @@ int main()
     faces.push_back("img/skybox/back.bmp");
     faces.push_back("img/skybox/front.bmp");
     GLuint cubemapTexture = loadCubemap(faces);
+    GLchar  * base = "img/base_texture.bmp";
+    GLuint base_texture = loadBaseTexture(base);
 
     SnowSence snowSence(500, 0.02, 0, 0.3);//number, size, rage, range
+
+
 
     // Game loop
     while (!glfwWindowShouldClose(window)){
@@ -322,16 +382,13 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-
         // Create camera transformations
         glm::mat4 view;
         view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(camera.Zoom, (GLfloat)w / (GLfloat)h, 0.1f, 100.0f);
 
 
-
-        // Draw skybox first
+        //**************** Draw skybox object**********************
         glDepthMask(GL_FALSE);// Remember to turn depth writing off
         skyboxShader.Use();   
         glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(glm::mat4(glm::mat3(camera.GetViewMatrix()))));
@@ -345,6 +402,7 @@ int main()
         glBindVertexArray(0);
         glDepthMask(GL_TRUE);
 
+        
 
         // Use cooresponding shader when setting uniforms/drawing objects
         lightingShader.Use();
@@ -377,7 +435,8 @@ int main()
          // glDrawArrays(GL_TRIANGLES, 0, 3600);
         glDrawElements(GL_TRIANGLE_STRIP, cntInd, GL_UNSIGNED_INT, NULL);
 
-        // // Draw inside object
+        
+        //**************** Draw inside object**********************
         // glClear(GL_DEPTH_BUFFER_BIT);
         // inShader.Use();
         // // Get the uniform locations
@@ -393,8 +452,9 @@ int main()
         // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         // glDrawArrays(GL_TRIANGLES, 0, 36);
         // glBindVertexArray(0);
+        
 
-
+        //**************** Draw snow object**********************
         glClear(GL_DEPTH_BUFFER_BIT);
 
         snowShader.Use(); 
@@ -404,9 +464,18 @@ int main()
         GLuint center = glGetUniformLocation(snowShader.Program, "center");
         GLuint length = glGetUniformLocation(snowShader.Program, "sideLength");
         snowSence.show(center,length);
-            // glBindVertexArray(incontainerVAO);
-            // glDrawArrays(GL_TRIANGLES, 0, 36);
-            // glBindVertexArray(0);
+        
+
+        //**************** Draw base object**********************
+        glClear(GL_DEPTH_BUFFER_BIT);
+        baseShader.Use();   
+        glUniformMatrix4fv(glGetUniformLocation(baseShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
+        glUniformMatrix4fv(glGetUniformLocation(baseShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glBindVertexArray(basecontainerVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, base_texture);
+        glDrawArrays(GL_TRIANGLES, 0, 40*2*3);
+        glBindVertexArray(0);
 
         // Swap the screen buffers
         glfwSwapBuffers(window);
@@ -506,7 +575,27 @@ GLuint loadCubemap(vector<const GLchar*> faces)
     return textureID;
 }
 
-void showSnow(){
+GLuint loadBaseTexture(GLchar* b_texture){
+    GLuint textureID;
+    glGenTextures(1, &textureID);
 
+    int width,height;
+    unsigned char* image;
     
+    glBindTexture(GL_TEXTURE_2D, textureID);
+        // image = SOIL_load_image(faces[i], &width, &height, 0, SOIL_LOAD_RGB);
+        // glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+        // SOIL_free_image_data(image);
+    image = readBMP(b_texture, width, height);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    delete image;
+
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    return textureID;
 }
