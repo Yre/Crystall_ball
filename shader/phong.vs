@@ -23,6 +23,7 @@ out vec3 v_refraction;
 out float v_fresnel;
 out vec3 FragPos;
 out vec3 Normal;
+out vec3 incident;
 
 
 void main(void){
@@ -30,7 +31,7 @@ void main(void){
     vec4 vertex = model * vec4( position, 1.0 );
     vec4 camera = vec4( viewPos, 1.0 );
     
-    vec3 incident = normalize( vec3( vertex - camera ) );
+    incident = normalize( vec3( vertex - camera ) );
     
     
     vec3 norm = mat3(transpose(inverse(model))) * normal;
