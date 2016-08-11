@@ -96,6 +96,7 @@ int main()
     Shader snowShader("shader/snow.vs","shader/snow.frag");
     Shader baseShader("shader/base.vs","shader/base.frag");
     Shader floorShader("shader/floor.vs","shader/floor.frag");
+    Shader bunnyShader("shader/bunny.vs","shader/bunny.frag");
 //================================================================================================
 
     /*****************Sphere *****************/
@@ -537,11 +538,11 @@ int main()
         // glDepthMask(GL_TRUE);
         
         //**************** Draw bunny object**********************
-        lightingShader.Use();
+        bunnyShader.Use();
         // Get the uniform locations
-        modelLoc = glGetUniformLocation(lightingShader.Program, "model");
-        viewLoc  = glGetUniformLocation(lightingShader.Program,  "view");
-        projLoc  = glGetUniformLocation(lightingShader.Program,  "projection");
+        modelLoc = glGetUniformLocation(bunnyShader.Program, "model");
+        viewLoc  = glGetUniformLocation(bunnyShader.Program,  "view");
+        projLoc  = glGetUniformLocation(bunnyShader.Program,  "projection");
         // Pass the matrices to the shader
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
