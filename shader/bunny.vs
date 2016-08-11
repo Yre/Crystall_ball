@@ -24,6 +24,7 @@ out float v_fresnel;
 out vec3 FragPos;
 out vec3 Normal;
 out vec3 incident;
+out float deep;
 
 
 void main(void){
@@ -44,4 +45,5 @@ void main(void){
     gl_Position = projection * view * vertex;
     Normal = normal;
     FragPos = gl_Position.xyz/gl_Position.w;
+    deep = position.y;
 }

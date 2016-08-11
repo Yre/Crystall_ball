@@ -8,6 +8,7 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec3 incident;
 out vec4 color;
+in float deep;
 uniform samplerCube skybox;
 
 
@@ -45,7 +46,7 @@ void main(void)
     vec4 reflectColor;
     reflectColor    = texture(skybox, reflectDir);
     
-    color = mix(refractColor*0.01, reflectColor, v_fresnel);
+    color = mix(refractColor*0, reflectColor, 1);
     //return ;
     
     /*
@@ -59,5 +60,7 @@ void main(void)
     */
     
     vec3 result = (0.3+0.2*max(dot(n,l),0.0)+0.3f*pow(dot(h,n),64)) * lightColor * objectColor;
-    color = color + vec4(result, 1.0f)*0.3;
+    color = color + vec4(result*0.3, 1.0f);
+    if(deep>0.4)
+        color.a=0.0f;
 }

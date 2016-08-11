@@ -308,9 +308,9 @@ int main()
     bunny_info.reserve(bunny_vertices.size()*3 + bunny_normals.size()*3);
     for(int i=0;i<bunny_vertices.size();i++)
     {
-        bunny_info.push_back(bunny_vertices[i].x*20);
-        bunny_info.push_back(bunny_vertices[i].y*20);
-        bunny_info.push_back(bunny_vertices[i].z*20);
+        bunny_info.push_back(bunny_vertices[i].x*5);
+        bunny_info.push_back(bunny_vertices[i].y*5);
+        bunny_info.push_back(bunny_vertices[i].z*5);
         bunny_info.push_back(bunny_normals[i].x);
         bunny_info.push_back(bunny_normals[i].y);
         bunny_info.push_back(bunny_normals[i].z);
@@ -537,30 +537,7 @@ int main()
         glDrawElements(GL_TRIANGLE_STRIP, cntInd, GL_UNSIGNED_INT, NULL);
         // glDepthMask(GL_TRUE);
         
-        //**************** Draw bunny object**********************
-        bunnyShader.Use();
-        // Get the uniform locations
-        modelLoc = glGetUniformLocation(bunnyShader.Program, "model");
-        viewLoc  = glGetUniformLocation(bunnyShader.Program,  "view");
-        projLoc  = glGetUniformLocation(bunnyShader.Program,  "projection");
-        // Pass the matrices to the shader
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-        objectColorLoc = glGetUniformLocation(lightingShader.Program, "objectColor");
-        lightColorLoc  = glGetUniformLocation(lightingShader.Program, "lightColor");
-        lightPosLoc    = glGetUniformLocation(lightingShader.Program, "lightPos");
-        viewPosLoc     = glGetUniformLocation(lightingShader.Program, "viewPos");
-        glUniform3f(objectColorLoc, 1.0f, 1.0f, 1.0f);
-        glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f);
-        glUniform3f(lightPosLoc,    lightPos.x, lightPos.y, lightPos.z);
-        glUniform3f(viewPosLoc,     camera.Position.x, camera.Position.y, camera.Position.z);
-        // Draw the container (using container's vertex attributes)
-        glBindVertexArray(bunnyVAO);
-        glDrawElements(GL_TRIANGLES, bunny_elements.size()*3, GL_UNSIGNED_SHORT, 0);
-        // cout<<bunny_elements.size()*3<<endl;
-        glBindVertexArray(0);
+        
 
         
         //**************** Draw inside object**********************
@@ -617,8 +594,34 @@ int main()
         glBindTexture(GL_TEXTURE_2D, base_texture);
         glDrawArrays(GL_TRIANGLES, 0, 40*2*3);
         glBindVertexArray(0);
-        
 
+
+        //**************** Draw bunny object**********************
+        bunnyShader.Use();
+        // Get the uniform locations
+        modelLoc = glGetUniformLocation(bunnyShader.Program, "model");
+        viewLoc  = glGetUniformLocation(bunnyShader.Program,  "view");
+        projLoc  = glGetUniformLocation(bunnyShader.Program,  "projection");
+        // Pass the matrices to the shader
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+        objectColorLoc = glGetUniformLocation(lightingShader.Program, "objectColor");
+        lightColorLoc  = glGetUniformLocation(lightingShader.Program, "lightColor");
+        lightPosLoc    = glGetUniformLocation(lightingShader.Program, "lightPos");
+        viewPosLoc     = glGetUniformLocation(lightingShader.Program, "viewPos");
+        glUniform3f(objectColorLoc, 1.0f, 1.0f, 1.0f);
+        glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f);
+        glUniform3f(lightPosLoc,    lightPos.x, lightPos.y, lightPos.z);
+        glUniform3f(viewPosLoc,     camera.Position.x, camera.Position.y, camera.Position.z);
+        // Draw the container (using container's vertex attributes)
+        glBindVertexArray(bunnyVAO);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glDrawElements(GL_TRIANGLES, bunny_elements.size()*3, GL_UNSIGNED_SHORT, 0);
+        // cout<<bunny_elements.size()*3<<endl;
+        glBindVertexArray(0);
         
 
         // Swap the screen buffers
