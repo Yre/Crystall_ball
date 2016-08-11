@@ -33,7 +33,7 @@ using namespace std;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void do_movement();
+void do_movement(SnowSence&);
 GLuint loadCubemap(vector<const GLchar*> faces);
 
 // Window dimensions
@@ -316,7 +316,7 @@ int main()
 
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
         glfwPollEvents();
-        do_movement();
+        do_movement(snowSence);
 
         // Clear the colorbuffer
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -433,7 +433,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 
 
-void do_movement()
+void do_movement(SnowSence& snowSence)
 {
     // Camera controls
     if (keys[GLFW_KEY_W])
@@ -444,11 +444,11 @@ void do_movement()
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (keys[GLFW_KEY_D])
         camera.ProcessKeyboard(RIGHT, deltaTime);
-    if (keys[GLFW_KEY_49]) //1 randomly
+    if (keys[GLFW_KEY_1]) //1 randomly
         snowSence.setMode(SNOW_RANDOM);
-    if (keys[GLFW_KEY_50]) //2 gravity
+    if (keys[GLFW_KEY_2]) //2 gravity
         snowSence.setMode(SNOW_GRAVITY);
-    if (keys[GLFW_KEY_51]) //1 gravity with wind
+    if (keys[GLFW_KEY_3]) //1 gravity with wind
         snowSence.setMode(SNOW_GRAVITY_W_WIND);
 
 
