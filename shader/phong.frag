@@ -30,10 +30,8 @@ void main(void)
     
     color = mix( refractionColor, reflectionColor, v_fresnel );
     
-    return;
+    //return;
     
-    //below not working
-
     vec3 result = (color.xyz + 0.8*max(dot(n,l),0.0)+0.5f*pow(dot(h,n),64)) * lightColor * objectColor;
 
     color = mix(color, vec4(result, 1.0f), 0.4);
