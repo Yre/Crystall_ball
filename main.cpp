@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <fstream>
 using namespace std;
 // GLEW
 #define GLEW_STATIC
@@ -32,6 +33,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void do_movement(SnowSence&);
 GLuint loadCubemap(vector<const GLchar*> faces);
 GLuint loadBaseTexture(GLchar*);
+void load_obj(const char* filename, vector<glm::vec4> &vertices, vector<glm::vec3> &normals, vector<GLushort> &elements);
 
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -43,7 +45,7 @@ GLfloat lastY  =  HEIGHT / 2.0;
 bool    keys[1024];
 
 // Light attributes
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(1.2f, -1.0f, 2.0f);
 
 // Deltatime
 GLfloat deltaTime = 0.0f;	// Time between current frame and last frame
@@ -296,8 +298,54 @@ int main()
         
     };
 
+    /***************** bunny *****************/
+    vector<glm::vec4> bunny_vertices;
+    vector<glm::vec3> bunny_normals;
+    vector<GLushort> bunny_elements;
+    load_obj("bunny.obj", bunny_vertices, bunny_normals, bunny_elements);
+    vector<GLfloat> bunny_info;
+    bunny_info.reserve(bunny_vertices.size()*3 + bunny_normals.size()*3);
+    for(int i=0;i<bunny_vertices.size();i++)
+    {
+        bunny_info.push_back(bunny_vertices[i].x*20);
+        bunny_info.push_back(bunny_vertices[i].y*20);
+        bunny_info.push_back(bunny_vertices[i].z*20);
+        bunny_info.push_back(bunny_normals[i].x);
+        bunny_info.push_back(bunny_normals[i].y);
+        bunny_info.push_back(bunny_normals[i].z);
+    }
+    cout<<bunny_info.size()<<endl;
+    cout<<bunny_elements.size()<<endl;
+    GLfloat* bunny_info_array = &bunny_info[0];
+    GLushort* bunny_elements_array = &bunny_elements[0];
+    cout<<bunny_info[0]<<" "<<bunny_info[1]<<" "<<bunny_info[2]<<endl;
+
 
 //================================================================================================
+
+    /*****************bunny VBO *****************/
+    GLuint bunnyVAO, bunnyVBO, bunnyEBO;
+    glGenVertexArrays(1, &bunnyVAO);
+    glGenBuffers(1, &bunnyVBO);
+    glGenBuffers(1, &bunnyEBO);
+
+    glBindVertexArray(bunnyVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, bunnyVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*bunny_info.size(), bunny_info_array, GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bunnyEBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*bunny_elements.size(), bunny_elements_array, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+
+
 
 
     /*****************floor VBO *****************/
@@ -482,22 +530,30 @@ int main()
         glDrawElements(GL_TRIANGLE_STRIP, cntInd, GL_UNSIGNED_INT, NULL);
 
         
-        //**************** Draw inside object**********************
-        // glClear(GL_DEPTH_BUFFER_BIT);
-        // inShader.Use();
-        // // Get the uniform locations
-        // modelLoc = glGetUniformLocation(inShader.Program, "model");
-        // viewLoc  = glGetUniformLocation(inShader.Program,  "view");
-        // projLoc  = glGetUniformLocation(inShader.Program,  "projection");
-        // // Pass the matrices to the shader
-        // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        // glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        //**************** Draw bunny object**********************
+        inShader.Use();
+        // Get the uniform locations
+        modelLoc = glGetUniformLocation(inShader.Program, "model");
+        viewLoc  = glGetUniformLocation(inShader.Program,  "view");
+        projLoc  = glGetUniformLocation(inShader.Program,  "projection");
+        // Pass the matrices to the shader
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        // // Draw the container (using container's vertex attributes)
-        // glBindVertexArray(incontainerVAO);
-        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-        // glBindVertexArray(0);
+        objectColorLoc = glGetUniformLocation(lightingShader.Program, "objectColor");
+        lightColorLoc  = glGetUniformLocation(lightingShader.Program, "lightColor");
+        lightPosLoc    = glGetUniformLocation(lightingShader.Program, "lightPos");
+        viewPosLoc     = glGetUniformLocation(lightingShader.Program, "viewPos");
+        glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
+        glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f);
+        glUniform3f(lightPosLoc,    lightPos.x, lightPos.y, lightPos.z);
+        glUniform3f(viewPosLoc,     camera.Position.x, camera.Position.y, camera.Position.z);
+        // Draw the container (using container's vertex attributes)
+        glBindVertexArray(bunnyVAO);
+        glDrawElements(GL_TRIANGLES, bunny_elements.size()*3, GL_UNSIGNED_SHORT, 0);
+        // cout<<bunny_elements.size()*3<<endl;
+        glBindVertexArray(0);
         
         //**************** Draw base object**********************
         // glClear(GL_DEPTH_BUFFER_BIT);
@@ -649,4 +705,52 @@ GLuint loadBaseTexture(GLchar* b_texture){
     // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
     glBindTexture(GL_TEXTURE_2D, 0);
     return textureID;
+}
+
+void load_obj(const char* filename, vector<glm::vec4> &vertices, vector<glm::vec3> &normals, vector<GLushort> &elements)
+{
+    ifstream in(filename, ios::in);
+    if (!in)
+    {
+        cerr << "Cannot open " << filename << endl; exit(1);
+    }
+
+    string line;
+    while (getline(in, line))
+    {
+        if (line.substr(0,2) == "v ")
+        {
+            istringstream s(line.substr(2));
+            glm::vec4 v; s >> v.x; s >> v.y; s >> v.z; v.w = 1.0f;
+            vertices.push_back(v);
+        }
+        else if (line.substr(0,2) == "f ")
+        {
+            istringstream s(line.substr(2));
+            GLushort a,b,c;
+            s >> a; s >> b; s >> c;
+            a--; b--; c--;
+           elements.push_back(a); elements.push_back(b); elements.push_back(c);
+        }
+        else if (line[0] == '#')
+        {
+            /* ignoring this line */
+        }
+        else
+        {
+            /* ignoring this line */
+        }
+    }
+
+    normals.resize(vertices.size(), glm::vec3(0.0, 0.0, 0.0));
+    for (int i = 0; i < elements.size(); i+=3)
+    {
+        GLushort ia = elements[i];
+        GLushort ib = elements[i+1];
+        GLushort ic = elements[i+2];
+        glm::vec3 normal = glm::normalize(glm::cross(
+        glm::vec3(vertices[ib]) - glm::vec3(vertices[ia]),
+        glm::vec3(vertices[ic]) - glm::vec3(vertices[ia])));
+        normals[ia] = normals[ib] = normals[ic] = normal;
+    }
 }
