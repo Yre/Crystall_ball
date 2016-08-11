@@ -29,6 +29,10 @@ void main(void)
     vec4 reflectionColor = texture( skybox, normalize( v_reflection ) );
     
     color = mix( refractionColor, reflectionColor, v_fresnel );
+    
+    return;
+    
+    //below not working
 
     vec3 result = (color.xyz + 0.8*max(dot(n,l),0.0)+0.5f*pow(dot(h,n),64)) * lightColor * objectColor;
 
