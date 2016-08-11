@@ -1,6 +1,9 @@
 #include "../lib/SnowSence.h"
 
 #include <cmath>
+#define SNOW_RANDOM 1
+#define SNOW_GRAVITY 2
+#define SNOW_GRAVITY_W_WIND 3
 
 
 SnowSence::SnowSence(){}
@@ -10,6 +13,7 @@ SnowSence::SnowSence(GLuint number,GLfloat size,GLfloat rage,GLfloat range){
 	rageLevel = rage;
 	snowRange = range;
 	acceleration = glm::vec3(0.0f,0.000005,0.0);
+	mode = SNOW_RANDOM;
 	generate();
 }
 
@@ -37,7 +41,7 @@ void SnowSence::generate(){
 void SnowSence::show(GLuint center, GLuint length){
 
 	glBindVertexArray(VertexArrayID);
-
+	
 	for (int i = 0; i < numberOfFlack; i++){
 		drawCube(snowArray[i],center,length);
 		snowArray[i].speed += acceleration + windAccelerate(snowArray[i].pos);
@@ -67,6 +71,9 @@ bool SnowSence::outRange(snowflack flack){
 	else return false;
 }
 
+void SnowSence::setMode(GLuint m){
+	mode = m;
+}
 
 void SnowSence::drawCube(snowflack flack,GLuint center,GLuint sideLength){
 	GLfloat vertex_buffer[] = {

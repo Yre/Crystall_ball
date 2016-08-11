@@ -25,6 +25,10 @@ using namespace std;
 #include "lib/bitmap.h"
 #include "lib/SnowSence.h"
 
+#define SNOW_RANDOM 1
+#define SNOW_GRAVITY 2
+#define SNOW_GRAVITY_W_WIND 3
+
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -427,6 +431,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
+
+
 void do_movement()
 {
     // Camera controls
@@ -438,6 +444,14 @@ void do_movement()
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (keys[GLFW_KEY_D])
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (keys[GLFW_KEY_49]) //1 randomly
+        snowSence.setMode(SNOW_RANDOM);
+    if (keys[GLFW_KEY_50]) //2 gravity
+        snowSence.setMode(SNOW_GRAVITY);
+    if (keys[GLFW_KEY_51]) //1 gravity with wind
+        snowSence.setMode(SNOW_GRAVITY_W_WIND);
+
+
 }
 
 bool firstMouse = true;

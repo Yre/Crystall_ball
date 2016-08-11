@@ -37,8 +37,10 @@ public:
 	vector<snowflack> snowArray;
 	
 	void show(GLuint,GLuint);
+	void setMode(GLuint);
 
 private:
+	GLuint mode;
 	GLuint SVBO;
 	GLuint VertexArrayID;
 	bool outRange(snowflack);
